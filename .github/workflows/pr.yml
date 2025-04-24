@@ -1,0 +1,41 @@
+name: Auto PR with GitHub App
+
+on:
+  pull_request:
+
+jobs:
+  pr:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get GitHub App Token
+        id: app-token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.APPID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Get timestamp
+        id: timestamp
+        run: echo "ts=$(date +%Y%m%d-%H%M%S)" >> "$GITHUB_OUTPUT"
+
+      - name: Modify files
+        run: |
+          echo "${{ steps.timestamp.outputs.ts }}" > time.txt
+
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          commit-message: "chore: auto update"
+          title: "🤖 Auto-generated PR"
+          body: |
+            This PR was automatically created by the GitHub App bot.
+          branch: auto/update-${{ steps.timestamp.outputs.ts }}
