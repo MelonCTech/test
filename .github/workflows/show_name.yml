@@ -14,3 +14,7 @@ jobs:
         run: |
           echo "PR comes from: ${{ github.event.pull_request.user.login }}"
 
+      - name: test
+        if: ${{ github.event.pull_request.user.login == 'melon-app[bot]'}}
+        run: |
+          echo "correct"
