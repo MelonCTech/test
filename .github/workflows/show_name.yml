@@ -1,0 +1,16 @@
+name: PR User Login
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  print-user-login:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Output PR user login
+        run: echo "PR comes from: ${{ github.event.pull_request.user.login }}"
+
