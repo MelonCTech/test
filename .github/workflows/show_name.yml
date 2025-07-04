@@ -18,3 +18,26 @@ jobs:
         if: ${{ github.event.pull_request.user.login == 'melon-app[bot]'}}
         run: |
           echo "correct"
+
+      - name: Generate kong bot app token
+        id: github-app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.TEST_APPID }}
+          private-key: ${{ secrets.TEST_APP_PRIVATE_KEY }}
+          owner: 'test-org403'
+
+      - name: Checkout code 1
+        uses: actions/checkout@v4
+        with:
+          repository: 'test-org403/test'
+          token: ${{ steps.github-app-token.outputs.token }}
+          ref: 'main'
+
+      - name: Checkout code 2
+        if: ${{ always() }}
+        uses: actions/checkout@v4
+        with:
+          repository: 'MelonCTech/test2'
+          token: ${{ steps.github-app-token.outputs.token }}
+          ref: 'main'
