@@ -1,0 +1,49 @@
+name: 🚀 Single Workflow Release (Demo)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., 3.6.0.0)'
+        required: true
+        type: string
+
+jobs:
+  build-and-stage:
+    name: Build & Push to Dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Simulate Build
+        run: |
+          echo "🚀 正在编译版本: ${{ inputs.version }}..."
+          sleep 2
+          echo "✅ 编译完成！"
+
+      - name: 📦 Push to Staging Registry (Mock)
+        run: |
+          echo "正在将 Docker 镜像推送到测试库..."
+          echo "Tag: kong/kong-gateway-dev:${{ inputs.version }}-pre-release"
+          
+          echo "正在将安装包推送到 Cloudsmith internal 测试库..."
+          sleep 2
+
+  promote-to-production:
+    name: Promote to Production
+    needs: build-and-stage
+    runs-on: ubuntu-latest
+    
+    environment: production 
+    
+    steps:
+      - name: 🚀 Promote Docker Image (Mock crane copy)
+        run: |
+          echo "🎉 审批已通过！流水线被放行，开始一键下发..."
+          echo "执行命令: crane copy kong/kong-gateway-dev:${{ inputs.version }}-pre-release ong/ong-gea:${{ inputs.version }}"
+
+      - name: 📝 Create GitHub Release
+        run: |
+          echo "正在解压 SBOM 并发布到 GitHub Release 页面..."
+          echo "✅ 全部发布流程结束！"
